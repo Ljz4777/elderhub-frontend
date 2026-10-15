@@ -1,8 +1,8 @@
 <template>
   <div class="page-card">
     <div class="table-toolbar">
-      <span class="tip">展示自己服务客户的全部护理记录（选择客户可筛选）</span>
-      <CustomerPicker v-model="customerId" source="live" style="width: 240px" @update:model-value="load" />
+      <span class="tip">默认展示自己服务客户的全部护理记录，选择客户可只看该客户的记录</span>
+      <CustomerPicker v-model="customerId" source="mine" clearable style="width: 240px" @update:model-value="load" />
     </div>
 
     <el-table v-loading="loading" :data="list" border stripe>
@@ -30,8 +30,8 @@ import { fmtDateTime, fmtOrDash } from '@/utils/format'
 import CustomerPicker from '@/components/CustomerPicker.vue'
 
 const userStore = useUserStore()
-// 后端实际按 userId 返回全部记录，customerId 仅为占位路径参数
-const customerId = ref(1)
+// null 表示不筛选客户，展示管家名下全部记录；后端同时按 userId 过滤
+const customerId = ref(null)
 const list = ref([])
 const loading = ref(false)
 

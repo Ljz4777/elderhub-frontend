@@ -20,5 +20,8 @@ export const goOut = (id) => request.post(`/admin/customer/goOut/${id}`)
 /** 老人回院 */
 export const comeback = (id) => request.post(`/admin/customer/comeback/${id}`)
 
-/** 无管家客户列表 */
+/** 无管家客户列表（user_id 为空或 -1） */
 export const listNoNurse = () => request.get('/admin/customer/no-nurse')
+
+/** 无床位客户列表 */
+export const listNoBed = () => request.get('/admin/customer/no-bed')

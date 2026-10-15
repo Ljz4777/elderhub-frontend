@@ -174,10 +174,10 @@
       <!-- ============ Tab3 无床位客户 ============ -->
       <el-tab-pane label="无床位客户" name="nonurse">
         <div class="table-toolbar">
-          <span class="tip">以下客户暂未分配床位（含未分配管家的客户），可在此编辑信息或删除。</span>
-          <el-button :icon="Refresh" @click="loadNoNurse">刷新</el-button>
+          <span class="tip">以下客户暂未分配床位，可在此编辑信息或删除。</span>
+          <el-button :icon="Refresh" @click="loadNoBed">刷新</el-button>
         </div>
-        <el-table v-loading="noNurseLoading" :data="noNurseList" border stripe>
+        <el-table v-loading="noBedLoading" :data="noBedList" border stripe>
           <el-table-column prop="id" label="ID" width="70" />
           <el-table-column prop="customer_name" label="姓名" min-width="90" />
           <el-table-column label="性别" width="70">
@@ -276,7 +276,7 @@
               </div>
               <el-table
                 v-loading="poolLoading"
-                :data="noNurseList"
+                :data="poolList"
                 highlight-current-row
                 border
                 size="small"
@@ -363,7 +363,7 @@ import { onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh, Search } from '@element-plus/icons-vue'
-import { saveCustomer, updateCustomer, removeCustomer, goOut, comeback, listNoNurse } from '@/api/customer'
+import { saveCustomer, updateCustomer, removeCustomer, goOut, comeback, listNoNurse, listNoBed } from '@/api/customer'
 import { listDetails } from '@/api/bed'
 import { listNurses } from '@/api/user'
 import { listNurseCustomers, assignCustomer, removeCustomerAssign } from '@/api/nurseAssign'
@@ -488,17 +488,17 @@ function resetForm() {
 }
 
 /* ---------- Tab3 无床位客户 ---------- */
-const noNurseList = ref([])
-const noNurseLoading = ref(false)
+const noBedList = ref([])
+const noBedLoading = ref(false)
 const editVisible = ref(false)
 const editForm = reactive({})
 
-async function loadNoNurse() {
-  noNurseLoading.value = true
+async function loadNoBed() {
+  noBedLoading.value = true
   try {
-    noNurseList.value = (await listNoNurse()) || []
+    noBedList.value = (await listNoBed()) || []
   } finally {
-    noNurseLoading.value = false
+    noBedLoading.value = false
   }
 }
 
@@ -513,7 +513,7 @@ async function doUpdate() {
     await updateCustomer({ ...editForm })
     ElMessage.success('保存成功')
     editVisible.value = false
-    loadNoNurse()
+    loadNoBed()
   } finally {
     saving.value = false
   }
@@ -522,7 +522,7 @@ async function doUpdate() {
 async function doRemove(row) {
   await removeCustomer(row.id)
   ElMessage.success('已删除')
-  loadNoNurse()
+  loadNoBed()
 }
 
 /* ---------- Tab4 管家分配 ---------- */
@@ -532,8 +532,20 @@ const nurseLoading = ref(false)
 const currentNurse = ref(null)
 const nurseCustomers = ref([])
 const assignSelection = ref(null)
+const poolList = ref([])
+const poolLoading = ref(false)
 const poolSelection = ref(null)
 const assignLoading = ref(false)
+
+/** 未分配管家的客户池 */
+async function loadPool() {
+  poolLoading.value = true
+  try {
+    poolList.value = (await listNoNurse()) || []
+  } finally {
+    poolLoading.value = false
+  }
+}
 
 async function loadNurses() {
   nurseLoading.value = true
@@ -559,7 +571,7 @@ async function doAssign() {
     await assignCustomer(currentNurse.value.id, poolSelection.value.id)
     ElMessage.success('分配成功')
     poolSelection.value = null
-    loadNoNurse()
+    loadPool()
     onNurseSelect(currentNurse.value)
   } finally {
     assignLoading.value = false
@@ -571,14 +583,17 @@ async function doRemoveAssign() {
   await removeCustomerAssign(assignSelection.value.id)
   ElMessage.success('已移除管家关系')
   assignSelection.value = null
-  loadNoNurse()
+  loadPool()
   if (currentNurse.value) onNurseSelect(currentNurse.value)
 }
 
 function onTabChange(name) {
   if (name === 'live') loadLive()
-  if (name === 'nonurse' || name === 'assign') loadNoNurse()
-  if (name === 'assign' && nurseList.value.length === 0) loadNurses()
+  if (name === 'nonurse') loadNoBed()
+  if (name === 'assign') {
+    loadPool()
+    if (nurseList.value.length === 0) loadNurses()
+  }
 }
 
 onMounted(loadLive)

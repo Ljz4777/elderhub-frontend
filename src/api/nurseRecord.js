@@ -9,9 +9,9 @@ import request from './request'
 export const butlerSaveRecord = (dto, userId) =>
   request.post('/nurse/nurse-record-mine/save', { ...dto, userId })
 
-/** 管家：查看自己客户的护理记录（/nurse/nurse-record-mine，后端按 userId 返回） */
+/** 管家：查看护理记录（customerId 为空表示全部客户，后端按 userId 过滤） */
 export const butlerListRecords = (customerId, userId) =>
-  request.get(`/nurse/nurse-record-mine/list/${customerId}`, { params: { userId } })
+  request.get('/nurse/nurse-record-mine/list', { params: { customerId, userId } })
 
 /** 管理员：查看客户护理记录 */
 export const adminListRecords = (customerId) =>

@@ -84,7 +84,7 @@
               v-for="item in items"
               :key="item.id"
               :label="`${item.nursingName}（剩余 ${item.nurseNumber ?? 0} 次）`"
-              :value="item.id"
+              :value="item.itemId"
               :disabled="item.status !== 1"
             />
           </el-select>

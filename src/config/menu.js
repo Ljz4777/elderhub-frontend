@@ -31,6 +31,7 @@ export const menuConfig = [
     children: [
       { title: '护理级别', path: '/nurse/level' },
       { title: '护理项目', path: '/nurse/content' },
+      { title: '客户护理项目', path: '/nurse/customer-items' },
     ],
   },
   {

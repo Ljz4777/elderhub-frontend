@@ -59,6 +59,12 @@ const routes = [
         component: () => import('@/views/nurse/Content.vue'),
         meta: { title: '护理项目', roles: ['ADMIN'] },
       },
+      {
+        path: 'nurse/customer-items',
+        name: 'NurseCustomerItems',
+        component: () => import('@/views/nurse/CustomerItems.vue'),
+        meta: { title: '客户护理项目', roles: ['ADMIN'] },
+      },
       // ---- 业务审批（ADMIN）----
       {
         path: 'outward',
